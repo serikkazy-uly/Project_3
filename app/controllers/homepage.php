@@ -4,14 +4,14 @@ use App\QueryBuilder;
 
 $db = new QueryBuilder();
 
-// $posts = $db->getAll('posts');
+$posts = $db->getAll('posts');
 
 
 // Insert
-// $db->insert([ //change up yor query inser or select
-//     'title' => 'Laura',
-//     // 'email' => 'damir89@gmail.com'// for example
-// ], 'posts');
+$db->insert([ //change up yor query inser or select
+    'title' => 'Laura',
+    // 'email' => 'damir89@gmail.com'// for example
+], 'posts');
 // exit;
 
 // Update
@@ -24,30 +24,28 @@ $db = new QueryBuilder();
 
 
 // findOne
-$user = $db->findOne(7, 'posts');
+// $user = $db->findOne(7, 'posts');
 
-if ($user) {
-    // Обработка найденного пользователя
-    echo "Пользователь найден";
-} else {
-    // Пользователь с указанным идентификатором не найден
-    echo "Пользователь не найден";
-}
-// var_dump($user);
+// if ($user) {
+//     // Обработка найденного пользователя
+//     echo "Пользователь найден";
+// } else {
+//     // Пользователь с указанным идентификатором не найден
+//     echo "Пользователь не найден";
+// }
 
 
 // Delete
-$db->delete(7, 'posts');
+// $db->delete(7, 'posts');
 
-// var_dump($db);
-// Теперь проверим, что запись с идентификатором 1 удалена
-$deletedUser = $db->findOne(7, 'posts');
-// var_dump($deletedUser);
+// // Теперь проверим, что запись с идентификатором 1 удалена
+// $deletedUser = $db->findOne(7, 'posts');
 
-if ($deletedUser) {
-    // Если запись найдена, значит delete не сработал
-    echo "Запись не удалена";
-} else {
-    // Если запись не найдена, значит delete сработал успешно
-    echo "Запись удалена успешно";
-}
+// if ($deletedUser) {
+//     // Если запись найдена, значит delete не сработал
+//     echo "Запись не удалена";
+// } else {
+//     // Если запись не найдена, значит delete сработал успешно
+//     echo "Запись удалена успешно";
+// }
+// exit;
