@@ -3,8 +3,8 @@
 
 require '../vendor/autoload.php';
 
-// use namespace
-use App\QueryBuilder;
-$db = new QueryBuilder();
+if($_SERVER['REQUEST_URI'] == '/home'){
+    require '../app/controllers/homepage.php';
+}
 
-var_dump($db);
+exit;
