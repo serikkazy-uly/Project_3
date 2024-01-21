@@ -32,6 +32,24 @@ class QueryBuilder
         return $result;
     }
 
+    public function findOne($id, $table)
+    {
+        $select = $this->queryFactory->newSelect();
+        $select->cols(['*'])
+            ->from($table)
+            ->where('id = :id')
+            ->bindValue('id', $id)
+            ->limit(1);
+
+        // var_dump($select->getStatement());die;
+
+        $sth = $this->pdo->prepare($select->getStatement());
+        $sth->execute($select->getBindValues());
+
+        // Возвращаем одну запись или null, если ничего не найдено
+        return $sth->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function insert($data, $table)
     {
         $insert = $this->queryFactory->newInsert();
@@ -47,17 +65,31 @@ class QueryBuilder
 
     public function update($data, $id, $table)
     {
-        $update=$this->queryFactory->newUpdate();
+        $update = $this->queryFactory->newUpdate();
         $update
-        ->table($table)
-        ->cols($data)
-        ->where('id = :id')
-        ->bindValue('id', $id);
+            ->table($table)
+            ->cols($data)
+            ->where('id = :id')
+            ->bindValue('id', $id);
 
         // var_dump($update->getStatement());
         // die;
         $sth = $this->pdo->prepare($update->getStatement());
         $sth->execute($update->getBindValues());
     }
+
+    public function delete($id, $table)
+    {
+        $delete = $this->queryFactory->newDelete();
+        $delete
+            ->from($table)
+            ->where('id = :id')
+            ->bindValue('id', $id);
+
+        // var_dump($delete->getStatement());
+        // die;
+
+        $sth = $this->pdo->prepare($delete->getStatement());
+        $sth->execute($delete->getBindValues());
+    }
 }
-  
