@@ -1,3 +1,5 @@
 composer.lock
 docker-compose.yml
 vendor
+example_code.php
+readme_lara.php
