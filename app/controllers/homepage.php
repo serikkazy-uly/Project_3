@@ -23,11 +23,12 @@ $db = new QueryBuilder();
 // exit;
 
 
-// Пример использования findOne
+// findOne
 $user = $db->findOne(7, 'posts');
 
 if ($user) {
     // Обработка найденного пользователя
+    echo "Пользователь найден";
 } else {
     // Пользователь с указанным идентификатором не найден
     echo "Пользователь не найден";
@@ -35,7 +36,7 @@ if ($user) {
 // var_dump($user);
 
 
-// Пример использования delete
+// Delete
 $db->delete(7, 'posts');
 
 // var_dump($db);
