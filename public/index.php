@@ -1,10 +1,11 @@
 <?php
 
-
 require '../vendor/autoload.php';
 
-if($_SERVER['REQUEST_URI'] == '/home'){
-    require '../app/controllers/homepage.php';
-}
+// Create new Plates instance
+$templates = new League\Plates\Engine('../app/views');
+// var_dump($templates);die;
 
-exit;
+// Render a template
+// echo $templates->render('homepage', ['name' => 'Jonathan']);
+echo $templates->render('about', ['title' => 'Jonathan']);
