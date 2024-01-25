@@ -19,7 +19,7 @@ class HomeController
         $db=new QueryBuilder();
         $posts = $db->getAll('posts');
         // Render a template
-        echo $this->templates->render('homepage', ['posts' => $posts]);
+        echo $this->templates->render('homepage', ['postsInView' => $posts]);
         // d($vars);exit;
     }
 

@@ -3,7 +3,7 @@
 <h1>User Profile</h1>
 
 
-<?php foreach($posts as $post):?>
+<?php foreach($postsInView as $post):?>
     <?php echo $post['title'] ?> <br>
 
     <?php endforeach;?>
