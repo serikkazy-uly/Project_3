@@ -15,8 +15,11 @@ class HomeController
     }
     public function index($vars)
     {
+
+        $db=new QueryBuilder();
+        $posts = $db->getAll('posts');
         // Render a template
-        echo $this->templates->render('homepage', ['name' => 'Jonathan']);
+        echo $this->templates->render('homepage', ['posts' => $posts]);
         // d($vars);exit;
     }
 
