@@ -7,14 +7,9 @@ require '../vendor/autoload.php';
 // use function Tamtamchik\SimpleFlash\flash;
 // d($_SERVER);die;
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/users', ['App\controllers\HomeController', 'index']);
-    // {id} must be a number (\d+)
-    $r->addRoute('GET', '/user/{id:\d+}', ['App\controllers\HomeController', 'index']);
+    $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);
 
-    $r->addRoute('GET', '/users/{id:\d+}/company/classes/school/{number:\d+}', ['App\controllers\HomeController', 'about']);
-
-    // The /{title} suffix is optional
-    $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'get_article_handler');
+    $r->addRoute('GET', '/about', ['App\controllers\HomeController', 'about']);
 });
 
 // Fetch method and URI from somewhere
