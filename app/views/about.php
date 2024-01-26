@@ -1,5 +1,8 @@
 
-<?php $this->layout('layout', ['title' => 'About']) ?>
+<?php $this->layout('layout', ['title' => 'User Profile']) ?>
+
+<?= $flash->display(); ?> <!-- Display flash messages -->
 
 <h1>About Page</h1>
-<p><?= $this->e($name) ?></p>
+<p><?= $this->e($name); ?></p>
+

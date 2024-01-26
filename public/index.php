@@ -1,15 +1,12 @@
 <?php
-if (!session_id()) {
-    session_start();
-}
+if (!session_id()) @session_start();
 
 require '../vendor/autoload.php';
-// use function Tamtamchik\SimpleFlash\flash;
-// d($_SERVER);die;
+
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);
 
-    $r->addRoute('GET', '/about', ['App\controllers\HomeController', 'about']);
+    $r->addRoute('GET', '/about/{amount:\d+}', ['App\controllers\HomeController', 'about']);
 });
 
 // Fetch method and URI from somewhere
@@ -23,25 +20,32 @@ if (false !== $pos = strpos($uri, '?')) {
 $uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+// d($routeInfo);die;
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND: //0
-        // ... 404 Not Found
+        echo '404 - Not Found';
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED: // 2
         $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
-        break; 
+        echo  '405 - Method Not Allowed';
+        break;
     case FastRoute\Dispatcher::FOUND: // 1
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
 
-        // вызов контроллера
+        // экземпляр контроллера
         $controller = new $handler[0];
-        // $controller->index(789); 
+        // $controller->about(7); 
         // d($controller);
         // exit;
 
+        // call_user_func([$controller, $handler[1]], $vars);
+        $controller = new App\controllers\HomeController();
+
         call_user_func([$controller, $handler[1]], $vars);
         // ... call $handler with $vars
+        // d($vars);die;
+        // d($controller);die;
+
         break;
 }
