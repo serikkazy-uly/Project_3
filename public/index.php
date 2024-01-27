@@ -6,7 +6,11 @@ require '../vendor/autoload.php';
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);
 
-    $r->addRoute('GET', '/about/{amount:\d+}', ['App\controllers\HomeController', 'about']);
+    $r->addRoute('GET', '/user', ['App\controllers\HomeController', 'user']);
+    $r->addRoute('GET', '/verification', ['App\controllers\HomeController', 'email_verification']);
+    $r->addRoute('GET', '/login', ['App\controllers\HomeController', 'login']);
+
+
 });
 
 // Fetch method and URI from somewhere
@@ -35,7 +39,7 @@ switch ($routeInfo[0]) {
 
         // экземпляр контроллера
         $controller = new $handler[0];
-        // $controller->about(7); 
+        // $controller->user(7); 
         // d($controller);
         // exit;
 

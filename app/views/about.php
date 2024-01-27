@@ -3,6 +3,6 @@
 
 <?= $flash->display(); ?> <!-- Display flash messages -->
 
-<h1>About Page</h1>
+<h1>user Page</h1>
 <p><?= $this->e($name); ?></p>
 

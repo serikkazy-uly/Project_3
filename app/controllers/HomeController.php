@@ -5,25 +5,29 @@ namespace App\controllers;
 use App\exceptions\AccountIsBlockedException;
 use App\exceptions\NotEnoughMoneyException;
 use App\QueryBuilder;
-use Exception;   
-use League\Plates\Engine;
-use Tamtamchik\SimpleFlash\Flash;
+use Exception;
 use function Tamtamchik\SimpleFlash\flash;
+use League\Plates\Engine;
+use PDO;
+use Tamtamchik\SimpleFlash\Flash;
 
 class HomeController
 {
 
     private $templates;
-    private $flash;  
+    private $flash;
+    private $auth;
     public function __construct()
     {
         $this->templates = new Engine('../app/views');
         $this->flash = new Flash();
+        $db = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
+        $this->auth = new \Delight\Auth\Auth($db);
     }
     public function index($vars)
     {
-        
-        // d($vars);die;
+
+        d($this->auth->getEmail());die;
         $db = new QueryBuilder();
         $posts = $db->getAll('posts');
         // Render a template
@@ -31,32 +35,75 @@ class HomeController
         // d($vars);exit;
     }
 
-    public function about($vars)
+    public function user()
     {
         try {
-            $this->withdraw($vars['amount']);
-            // exit;
-            // d($vars);die;
-        } catch (NotEnoughMoneyException $exception) {
-            flash()->message("Недостаточно средств");
-            // d(flash()->message());
-            // echo $exception->getMessage();
-        } catch (AccountIsBlockedException $exception) {
-            flash()->message("Вы заблокированы");
+            $userId = $this->auth->register('dana@gmail.com', '123', 'Dana', function ($selector, $token) {
+                echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
+                echo '  For emails, consider using the mail(...) function, Symfony Mailer, Swiftmailer, PHPMailer, etc.';
+                echo '  For SMS, consider using a third-party service and a compatible SDK';
+            });
+        
+            echo 'We have signed up a new user with the ID ' . $userId;
         }
-        echo $this->templates->render('about', ['name' => 'Page about Jonathan', 'flash' => $this->flash]);
+        catch (\Delight\Auth\InvalidEmailException $e) {
+            die('Invalid email address');
+        }
+        catch (\Delight\Auth\InvalidPasswordException $e) {
+            die('Invalid password');
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            die('User already exists');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            die('Too many requests');
+        }
+        
+        // echo $this->templates->render('user', ['name' => 'Page user Jonathan', 'flash' => $this->flash]);
     }
-    
-    
+
+
     // Exception - для пользователей обр ошибок согласно логике проекта
-    public function withdraw($amount = 1)
+    public function email_verification()
     {
-        $total = 10;
-        // throw new AccountIsBlockedException("Your accaunt is b  locked");
-        if ($amount > $total) {
-            throw new NotEnoughMoneyException("Not enough money");
-            // d($amount);die;
-            // d($total);die;
+        try {
+            $this->auth->confirmEmail('Lc6isy6HG1F4Vi34', 'YoCN5sAVfqBP1g6J');
+        
+            echo 'Email address has been verified';
+        }
+        catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+            die('Invalid token');
+        }
+        catch (\Delight\Auth\TokenExpiredException $e) {
+            die('Token expired');
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            die('Email address already exists');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            die('Too many requests');
         }
     }
+
+public function login(){
+    try {
+        $this->auth->login('dana@gmail.com', '123');
+    
+        echo 'User is logged in';
+    }
+    catch (\Delight\Auth\InvalidEmailException $e) {
+        die('Wrong email address');
+    }
+    catch (\Delight\Auth\InvalidPasswordException $e) {
+        die('Wrong password');
+    }
+    catch (\Delight\Auth\EmailNotVerifiedException $e) {
+        die('Email not verified');
+    }
+    catch (\Delight\Auth\TooManyRequestsException $e) {
+        die('Too many requests');
+    }
+}
+
+
 }
