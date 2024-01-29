@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+    
 <?php
 require '../vendor/autoload.php';
 
@@ -27,6 +37,7 @@ $queryFactory = new QueryFactory('mysql');
 // var_dump($result);
 // die;
 
+// for totalItems
 $select = $queryFactory->newSelect();
 $select
     ->cols(['*'])
@@ -35,18 +46,16 @@ $sth = $pdo->prepare($select->getStatement());
 $sth->execute($select->getBindValues());
 $totalItems = $sth->fetchAll(PDO::FETCH_ASSOC);
 
+// for only itemsPerPage
 $select = $queryFactory->newSelect();
 $select
     ->cols(['*'])
     ->from('posts')
     ->setPaging(3)
     ->page($_GET['page'] ?? 1);
-
 // prepare
 $sth = $pdo->prepare($select->getStatement());
-
 $sth->execute($select->getBindValues());
-
 // get result
 $items = $sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -61,7 +70,8 @@ foreach ($items as $item) {
 }
 ?>
 
-<body>
+<!-- <= $paginator; ?> // same as below -->
+
     <ul class="pagination">
         <?php if ($paginator->getPrevUrl()) : ?>
             <li><a href="<?php echo $paginator->getPrevUrl(); ?>">&laquo; Previous</a></li>
@@ -92,4 +102,3 @@ foreach ($items as $item) {
 </body>
 
 </html>
-
