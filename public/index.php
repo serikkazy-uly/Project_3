@@ -1,55 +1,95 @@
 <?php
-if (!session_id()) @session_start();
-
 require '../vendor/autoload.php';
 
-$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);
+use Aura\SqlQuery\QueryFactory;
+use Faker\Factory;
+use JasonGrimes\Paginator;
 
-    $r->addRoute('GET', '/user', ['App\controllers\HomeController', 'user']);
-    $r->addRoute('GET', '/verification', ['App\controllers\HomeController', 'email_verification']);
-    $r->addRoute('GET', '/login', ['App\controllers\HomeController', 'login']);
+$faker = Factory::create();
 
+$pdo = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
+$queryFactory = new QueryFactory('mysql');
 
-});
+// $insert = $queryFactory->newInsert();
+// $insert->into('posts');
+// for ($i = 0; $i < 30; $i++) {
+//     $insert->cols([
+//         'title' => $faker->words(3, true),
+//         'content' => $faker->text
+//     ]);
+//     $insert->addRow();
+// }
 
-// Fetch method and URI from somewhere
-$httpMethod = $_SERVER['REQUEST_METHOD'];
-$uri = $_SERVER['REQUEST_URI'];
+// $sth = $pdo->prepare($insert->getStatement());
+// $sth->execute($insert->getBindValues());
 
-// Strip query string (?foo=bar) and decode URI
-if (false !== $pos = strpos($uri, '?')) {
-    $uri = substr($uri, 0, $pos);
+// $result = $sth->fetch(PDO::FETCH_ASSOC);
+// var_dump($result);
+// die;
+
+$select = $queryFactory->newSelect();
+$select
+    ->cols(['*'])
+    ->from('posts');
+$sth = $pdo->prepare($select->getStatement());
+$sth->execute($select->getBindValues());
+$totalItems = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+$select = $queryFactory->newSelect();
+$select
+    ->cols(['*'])
+    ->from('posts')
+    ->setPaging(3)
+    ->page($_GET['page'] ?? 1);
+
+// prepare
+$sth = $pdo->prepare($select->getStatement());
+
+$sth->execute($select->getBindValues());
+
+// get result
+$items = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+$itemsPerPage = 3;
+$currentPage = $_GET['page'] ?? 1;
+$urlPattern = '?page=(:num)';
+
+$paginator = new Paginator(count($totalItems), $itemsPerPage, $currentPage, $urlPattern);
+
+foreach ($items as $item) {
+    echo $item['id'] . PHP_EOL . $item['title'] . '<br>';
 }
-$uri = rawurldecode($uri);
+?>
 
-$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
-// d($routeInfo);die;
-switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND: //0
-        echo '404 - Not Found';
-        break;
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED: // 2
-        $allowedMethods = $routeInfo[1];
-        echo  '405 - Method Not Allowed';
-        break;
-    case FastRoute\Dispatcher::FOUND: // 1
-        $handler = $routeInfo[1];
-        $vars = $routeInfo[2];
+<body>
+    <ul class="pagination">
+        <?php if ($paginator->getPrevUrl()) : ?>
+            <li><a href="<?php echo $paginator->getPrevUrl(); ?>">&laquo; Previous</a></li>
+        <?php endif; ?>
 
-        // экземпляр контроллера
-        $controller = new $handler[0];
-        // $controller->user(7); 
-        // d($controller);
-        // exit;
+        <?php foreach ($paginator->getPages() as $page) : ?>
+            <?php if ($page['url']) : ?>
+                <li <?php echo $page['isCurrent'] ? 'class="active"' : ''; ?>>
+                    <a href="<?php echo $page['url']; ?>"><?php echo $page['num']; ?></a>
+                </li>
+            <?php else : ?>
+                <li class="disabled"><span><?php echo $page['num']; ?></span></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
 
-        // call_user_func([$controller, $handler[1]], $vars);
-        $controller = new App\controllers\HomeController();
+        <?php if ($paginator->getNextUrl()) : ?>
+            <li><a href="<?php echo $paginator->getNextUrl(); ?>">Next &raquo;</a></li>
+        <?php endif; ?>
+    </ul>
 
-        call_user_func([$controller, $handler[1]], $vars);
-        // ... call $handler with $vars
-        // d($vars);die;
-        // d($controller);die;
+    <p>
+        <?php echo $paginator->getTotalItems(); ?> found.
+        Showing
+        <?php echo $paginator->getCurrentPageFirstItem(); ?>
+        -
+        <?php echo $paginator->getCurrentPageLastItem(); ?>
+    </p>
+</body>
 
-        break;
-}
+</html>
+
