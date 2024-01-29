@@ -1,13 +1,33 @@
 <?php
 if (!session_id()) @session_start();
 
+use Delight\Auth\Auth;
+use League\Plates\Engine;
+
 require '../vendor/autoload.php';
 use DI\ContainerBuilder;
 
 $containerBuilder = new ContainerBuilder;
+$containerBuilder->addDefinitions([
+    Engine::class => function(){
+        return new Engine('../app/views');
+    },
+    PDO::class=>function(){
+        $driver = "mysql";
+        $host = "mysql";
+        $database_name = "laravel";
+        $username = "user";
+        $password = "secret";
+        return new PDO("$driver:host=$host; dbname=$database_name", $username, $password);
+    },
+    // Delight\Auth\Auth - simplefield as Auth
+    Auth::class=> function($container){
+        return new Auth($container->get('PDO'));
+    },
+]);
+
 $container = $containerBuilder->build();
 // d($container);die;
-// ORM::configure('mysql');
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);

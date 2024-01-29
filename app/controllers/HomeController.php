@@ -10,6 +10,7 @@ use function Tamtamchik\SimpleFlash\flash;
 use League\Plates\Engine;
 use PDO;
 use Tamtamchik\SimpleFlash\Flash;
+use Delight\Auth\Auth;
 
 class HomeController
 {
@@ -18,18 +19,18 @@ class HomeController
     private $flash;
     private $auth;
     private $qb;
-    public function __construct(QueryBuilder $qb)
+    public function __construct(QueryBuilder $qb, Engine $engine, \Delight\Auth\Auth $auth)
     {
         $this->qb=$qb;
-        $this->templates = new Engine('../app/views');
+        $this->templates = $engine;
+        // $db = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
         $this->flash = new Flash();
-        $db = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
-        $this->auth = new \Delight\Auth\Auth($db);
+        $this->auth = $auth;
     }
     public function index()
     {
         // var_dump($this->auth->admin()->addRoleForUserById(1, \Delight\Auth\Role::ADMIN));
-        d($this->qb);die; 
+        d($this->auth);die; 
         // d($this->auth->getRoles());die;
         // $this->auth->login('dana@gmail.com', '123');die;
         try {
@@ -39,7 +40,7 @@ class HomeController
         }
         die;
 
-        $db = new QueryBuilder();
+        $db = new QueryBuilder(); // ?????????????
         $posts = $db->getAll('posts');
         // Render a template
         echo $this->templates->render('homepage', ['postsInView' => $posts]);

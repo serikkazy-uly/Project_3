@@ -7,13 +7,13 @@ use PDO;
 
 class QueryBuilder
 {
-
+ 
     private $pdo;
     private $queryFactory;
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        $this->pdo = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
+        $this->pdo = $pdo;
         $this->queryFactory = new QueryFactory('mysql');
     }
 
