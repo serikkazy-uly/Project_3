@@ -2,15 +2,18 @@
 if (!session_id()) @session_start();
 
 require '../vendor/autoload.php';
+use DI\ContainerBuilder;
+
+$containerBuilder = new ContainerBuilder;
+$container = $containerBuilder->build();
+// d($container);die;
+// ORM::configure('mysql');
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/home', ['App\controllers\HomeController', 'index']);
-
     $r->addRoute('GET', '/user', ['App\controllers\HomeController', 'user']);
     $r->addRoute('GET', '/verification', ['App\controllers\HomeController', 'email_verification']);
     $r->addRoute('GET', '/login', ['App\controllers\HomeController', 'login']);
-
-
 });
 
 // Fetch method and URI from somewhere
@@ -37,19 +40,10 @@ switch ($routeInfo[0]) {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
 
-        // экземпляр контроллера
+       $container->call($routeInfo[1], $routeInfo[2]);
+        // d($cont);die;
+
         $controller = new $handler[0];
-        // $controller->user(7); 
-        // d($controller);
-        // exit;
-
-        // call_user_func([$controller, $handler[1]], $vars);
-        $controller = new App\controllers\HomeController();
-
         call_user_func([$controller, $handler[1]], $vars);
-        // ... call $handler with $vars
-        // d($vars);die;
-        // d($controller);die;
-
         break;
 }

@@ -17,19 +17,20 @@ class HomeController
     private $templates;
     private $flash;
     private $auth;
-    public function __construct()
+    private $qb;
+    public function __construct(QueryBuilder $qb)
     {
+        $this->qb=$qb;
         $this->templates = new Engine('../app/views');
         $this->flash = new Flash();
         $db = new PDO("mysql:host=mysql; dbname=laravel;charset=utf8;", "user", "secret");
         $this->auth = new \Delight\Auth\Auth($db);
     }
-    public function index($vars)
+    public function index()
     {
         // var_dump($this->auth->admin()->addRoleForUserById(1, \Delight\Auth\Role::ADMIN));
-        d($this->auth->getRoles());
-        die;
-        // d($this->auth->isLoggedIn());die; 
+        d($this->qb);die; 
+        // d($this->auth->getRoles());die;
         // $this->auth->login('dana@gmail.com', '123');die;
         try {
             $this->auth->admin()->addRoleForUserById(1, \Delight\Auth\Role::ADMIN);
@@ -53,7 +54,7 @@ class HomeController
                 echo '  For emails, consider using the mail(...) function, Symfony Mailer, Swiftmailer, PHPMailer, etc.';
                 echo '  For SMS, consider using a third-party service and a compatible SDK';
             });
-
+ 
             echo 'We have signed up a new user with the ID ' . $userId;
         } catch (\Delight\Auth\InvalidEmailException $e) {
             die('Invalid email address');
